@@ -3,18 +3,103 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Click Counter App</title>
-        <link rel="stylesheet" href="style.css" />
+        <title>Connect The Dots Game</title>
+        <link rel="stylesheet" href="dots-lines.css" />
     </head>
     <body>
         <div class="container">
-            <h1>Realtime Click Counter</h1>
-            <div class="counter-display">
-                <label id="clickCount">Clicks: 0</label>
+            <h1>CONNECT THE DOTS</h1>
+            <div class="instructions">
+                <h3>How to Play</h3>
+                <ul>
+                    <li>Take turns drawing lines between dots</li>
+                    <li>When you complete a square, you score a point</li>
+                    <li>If you complete a square, you get another turn</li>
+                    <li>Player with most squares wins!</li>
+                </ul>
             </div>
-            <button id="clickButton" class="click-btn">Click Me!</button>
+
+            <div class="game-info">
+                <div class="player-info">
+                    <div class="player player1">
+                        <span>Player 1: <span id="score1">0</span></span>
+                    </div>
+                    <div class="player player2">
+                        <span>Player 2: <span id="score2">0</span></span>
+                    </div>
+                </div>
+                <div class="game-status">
+                    <div class="connection-indicator desktop-connection">
+                        <div
+                            class="connection-dot"
+                            id="connectionDotDesktop"
+                        ></div>
+                        <span class="connection-text">Server</span>
+                    </div>
+                    <span id="gameStatus">Waiting for players...</span>
+                </div>
+            </div>
+
+            <div class="game-info-compact">
+                <div class="player player1">
+                    <span>P1: <span id="score1Mobile">0</span></span>
+                </div>
+                <div class="player player2">
+                    <span>P2: <span id="score2Mobile">0</span></span>
+                </div>
+            </div>
+
+            <div class="mobile-status-bar">
+                <div class="connection-indicator">
+                    <div class="connection-dot" id="connectionDot"></div>
+                    <span class="connection-text">Connection</span>
+                </div>
+                <div class="mobile-game-status">
+                    <span id="gameStatusMobile">Waiting for players...</span>
+                </div>
+            </div>
+            <div class="game-board-container">
+                <svg id="gameBoard" class="game-board" viewBox="0 0 400 400">
+                    <!-- Dots and lines will be generated here -->
+                </svg>
+            </div>
+            <div class="game-controls">
+                <button id="resetGame" class="btn">Reset Game</button>
+            </div>
+
+            <div id="settingsPanel" class="settings-panel hidden">
+                <div class="settings-content">
+                    <h3>Game Settings</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="audioEnabled" checked />
+                            <span>Sound Effects</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="hapticEnabled" checked />
+                            <span>Haptic Feedback</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input
+                                type="range"
+                                id="audioVolume"
+                                min="0"
+                                max="100"
+                                value="50"
+                            />
+                            <span
+                                >Volume: <span id="volumeValue">50</span>%</span
+                            >
+                        </label>
+                    </div>
+                    <button id="closeSettings" class="btn">Close</button>
+                </div>
+            </div>
         </div>
-        <script src="app.js"></script>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <script src="dots-lines.js"></script>
     </body>
 </html>

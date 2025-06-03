@@ -1,7 +1,7 @@
 {
-  "name": "realtime_coop_prototype",
+  "name": "connect-the-dots-realtime",
   "version": "1.0.0",
-  "description": "",
+  "description": "A real-time multiplayer Connect The Dots (Dots and Lines) game built with WebSocket technology",
   "main": "index.js",
   "scripts": {
     "start": "node backend/index.js",
