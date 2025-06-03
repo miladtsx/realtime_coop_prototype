@@ -137,12 +137,24 @@ class GameManager {
     // Determine winner (other player wins by forfeit)
     const otherPlayer = game.getOtherPlayer(playerId);
     
-    // Notify players of reset with winner
-    game.broadcast({
-      type: 'game-ended-by-reset',
-      winner: otherPlayer,
-      reason: `Player ${playerId} reset the game`
-    });
+    // Send personalized messages to each player
+    for (const [pid, ws] of game.players) {
+      if (pid === playerId) {
+        // Message to the player who reset
+        ws.send(JSON.stringify({
+          type: 'game-ended-by-reset',
+          winner: otherPlayer,
+          reason: 'You reset the game'
+        }));
+      } else {
+        // Message to the other player
+        ws.send(JSON.stringify({
+          type: 'game-ended-by-reset',
+          winner: pid,
+          reason: 'The other player reset the game'
+        }));
+      }
+    }
 
     // Reset the game
     game.reset();
@@ -310,12 +322,24 @@ class GameManager {
   handleGameEnd(gameId, game) {
     const winner = game.getWinner();
     
-    game.broadcast({
-      type: 'game-ended',
-      winner: winner,
-      scores: game.scores,
-      reason: winner === 0 ? 'Tie game' : `Player ${winner} wins`
-    });
+    // Send personalized messages to each player
+    for (const [playerId, ws] of game.players) {
+      let reason;
+      if (winner === 0) {
+        reason = 'Tie game';
+      } else if (winner === playerId) {
+        reason = 'YOU won!';
+      } else {
+        reason = 'The other player won!';
+      }
+      
+      ws.send(JSON.stringify({
+        type: 'game-ended',
+        winner: winner,
+        scores: game.scores,
+        reason: reason
+      }));
+    }
 
     // Game remains in memory for potential restart
     // Will be cleaned up by periodic cleanup

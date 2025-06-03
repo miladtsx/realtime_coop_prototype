@@ -176,15 +176,25 @@ function handleGameReset(ws) {
   // Determine the other player (winner by forfeit)
   const winner = ws.playerId === 1 ? 2 : 1;
   
-  // Notify both players of the game end with winner
-  const gameEndMessage = {
+  // Send personalized messages to each player
+  const resetterMessage = {
     type: "game-ended-by-reset",
     winner: winner,
-    reason: `Player ${ws.playerId} reset the game`
+    reason: "You reset the game"
   };
   
-  game.player1.send(JSON.stringify(gameEndMessage));
-  game.player2.send(JSON.stringify(gameEndMessage));
+  const otherPlayerMessage = {
+    type: "game-ended-by-reset",
+    winner: winner,
+    reason: "The other player reset the game"
+  };
+  
+  // Send personalized message to the player who reset
+  ws.send(JSON.stringify(resetterMessage));
+  
+  // Send personalized message to the other player
+  const otherPlayer = ws.playerId === 1 ? game.player2 : game.player1;
+  otherPlayer.send(JSON.stringify(otherPlayerMessage));
   
   // Reset game state after declaring winner
   game.lines.clear();

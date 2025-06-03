@@ -685,9 +685,12 @@ function checkGameEnd() {
     if (winner === 0) {
       updateGameStatus("Game Over - It's a tie!");
       showCelebration("It's a Tie!", "Great game everyone!");
+    } else if (winner === gameState.playerId) {
+      updateGameStatus("Game Over - YOU won!");
+      showCelebration("You Win!", "Congratulations!");
     } else {
-      updateGameStatus(`Game Over - Player ${winner} wins!`);
-      showCelebration(`Player ${winner} Wins!`, "Congratulations!");
+      updateGameStatus("Game Over - You lost!");
+      showCelebration("You Lose!", "Better luck next time!");
     }
     
     // Remove highlighting from all player boxes when game ends
@@ -848,10 +851,27 @@ socket.onmessage = (event) => {
         gameState.gameActive = false;
         const winnerMessage = data.winner === gameState.playerId 
           ? `You win! ${data.reason}` 
-          : `Player ${data.winner} wins! ${data.reason}`;
+          : `You lose! ${data.reason}`;
         updateGameStatus(winnerMessage);
         showCelebration(
-          data.winner === gameState.playerId ? "You Win!" : `Player ${data.winner} Wins!`,
+          data.winner === gameState.playerId ? "You Win!" : "You Lose!",
+          data.reason
+        );
+        
+        // Remove highlighting from all player boxes when game ends
+        if (player1Box) player1Box.classList.remove("current-turn");
+        if (player2Box) player2Box.classList.remove("current-turn");
+        if (player1BoxMobile) player1BoxMobile.classList.remove("current-turn");
+        if (player2BoxMobile) player2BoxMobile.classList.remove("current-turn");
+        break;
+
+      case "game-ended":
+        // Handle normal game end
+        gameState.gameActive = false;
+        updateGameStatus(data.reason);
+        showCelebration(
+          data.winner === gameState.playerId ? "You Win!" : 
+          data.winner === 0 ? "It's a Tie!" : "You Lose!",
           data.reason
         );
         
