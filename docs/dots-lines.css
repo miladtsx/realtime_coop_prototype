@@ -126,23 +126,24 @@ h1 {
     width: 100%;
     max-width: 400px;
     height: 400px;
-    border: 2px solid #bdc3c7;
+    border: 2px solid #444444;
     border-radius: 10px;
-    background: white;
+    background: #1a1a1a;
     touch-action: manipulation;
 }
 
 .dot {
-    fill: #34495e;
-    stroke: #2c3e50;
+    fill: #cccccc;
+    stroke: #ffffff;
     stroke-width: 2;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .dot:hover {
-    fill: #e74c3c;
+    fill: #ffffff;
     transform: scale(1.2);
+    filter: drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 12px #ffffff);
 }
 
 .line {
@@ -152,32 +153,32 @@ h1 {
 }
 
 .line.available {
-    stroke: #bdc3c7;
+    stroke: #666666;
     stroke-dasharray: 5, 5;
-    opacity: 0.5;
+    opacity: 0.6;
     transition: all 0.15s ease;
 }
 
 .line.available.disabled {
-    stroke: #ecf0f1;
-    opacity: 0.2;
+    stroke: #333333;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
 .line.available.hovered {
-    stroke: #3498db;
+    stroke: #00ffff;
     opacity: 0.9;
     stroke-width: 6;
     stroke-dasharray: none;
-    filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.6));
+    filter: drop-shadow(0 0 8px #00ffff) drop-shadow(0 0 16px #00ffff);
 }
 
 .line.available.touch-preview {
-    stroke: #27ae60;
+    stroke: #00ff80;
     opacity: 1;
     stroke-width: 7;
     stroke-dasharray: none;
-    filter: drop-shadow(0 0 12px rgba(39, 174, 96, 0.8));
+    filter: drop-shadow(0 0 12px #00ff80) drop-shadow(0 0 20px #00ff80);
     animation: pulse-preview 0.6s ease-in-out infinite alternate;
 }
 
@@ -193,13 +194,15 @@ h1 {
 }
 
 .line.player1 {
-    stroke: #e74c3c;
+    stroke: #ff0040;
     opacity: 1;
+    filter: drop-shadow(0 0 8px #ff0040) drop-shadow(0 0 16px #ff0040) drop-shadow(0 0 24px #ff0040);
 }
 
 .line.player2 {
-    stroke: #3498db;
+    stroke: #0080ff;
     opacity: 1;
+    filter: drop-shadow(0 0 8px #0080ff) drop-shadow(0 0 16px #0080ff) drop-shadow(0 0 24px #0080ff);
 }
 
 .square {
@@ -208,11 +211,11 @@ h1 {
 }
 
 .square.player1 {
-    fill: #e74c3c;
+    fill: #ff0040;
 }
 
 .square.player2 {
-    fill: #3498db;
+    fill: #0080ff;
 }
 
 .game-controls {
