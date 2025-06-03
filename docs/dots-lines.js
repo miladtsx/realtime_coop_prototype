@@ -1,4 +1,5 @@
-const BACKEND_WS_URL = "ws://localhost:3000";
+//const BACKEND_WS_URL = "ws://localhost:3000";
+const BACKEND_WS_URL = "wss://reimagined-pancake-7p7pqrjpv64fgxg-3000.app.github.dev/";
 const socket = new WebSocket(BACKEND_WS_URL);
 
 // Game state
