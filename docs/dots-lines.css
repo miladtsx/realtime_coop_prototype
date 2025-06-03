@@ -219,7 +219,9 @@ h1 {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    align-items: center;
     margin-top: 2rem;
+    flex-wrap: wrap;
 }
 
 .btn {
@@ -246,14 +248,32 @@ h1 {
 }
 
 .btn.secondary {
-    background: #95a5a6;
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
     color: white;
     box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
 .btn.secondary:hover {
-    background: #7f8c8d;
+    background: linear-gradient(135deg, #7f8c8d, #6c7a7b);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+}
+
+.btn.secondary:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn.secondary:hover:before {
+    left: 100%;
 }
 
 .btn:active {
@@ -416,14 +436,16 @@ h1 {
     }
 
     .game-controls {
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
     .btn {
-        width: 200px;
-        padding: 0.6rem 1.5rem;
-        font-size: 1rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        min-width: 120px;
     }
 
     .instructions {
@@ -433,6 +455,15 @@ h1 {
 
     .turn-info {
         font-size: 1rem;
+    }
+
+    .settings-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .settings-content h3 {
+        font-size: 1.3rem;
     }
 }
 
@@ -641,6 +672,57 @@ h1 {
     flex: 1;
     margin-right: 0.5rem;
     accent-color: #3498db;
+    height: 6px;
+    border-radius: 3px;
+    background: #e9ecef;
+    outline: none;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+    transition: all 0.2s ease;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(52, 152, 219, 0.4);
+}
+
+.setting-item input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+.music-status {
+    font-size: 0.9em;
+    margin-left: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.music-status.playing {
+    animation: pulse-music 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-music {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
 }
 
 #closeSettings {

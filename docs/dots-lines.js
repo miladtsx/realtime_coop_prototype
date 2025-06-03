@@ -35,6 +35,13 @@ const player2Box = document.querySelector(".game-info .player2");
 const player1BoxMobile = document.querySelector(".game-info-compact .player1");
 const player2BoxMobile = document.querySelector(".game-info-compact .player2");
 
+// Background music variables
+let backgroundMusic = null;
+let backgroundMusicEnabled = true;
+let hasUserInteracted = false;
+let musicStartAttempts = 0;
+let maxMusicAttempts = 3;
+
 function updateGameStatus(message) {
   if (gameStatus) gameStatus.textContent = message;
   if (gameStatusMobile) gameStatusMobile.textContent = message;
@@ -396,6 +403,131 @@ function handleLineClick(event, line) {
       player: gameState.playerId,
     }),
   );
+}
+
+// Background music functions
+function initializeBackgroundMusic() {
+  backgroundMusic = new Audio('./background.mp3');
+  backgroundMusic.loop = true;
+  backgroundMusic.volume = 0.3;
+  backgroundMusic.preload = 'auto';
+  
+  // Set up event listeners for when the audio can play
+  backgroundMusic.addEventListener('canplaythrough', () => {
+    updateGameStatus('🎵 Music ready - click anywhere to start');
+    if (backgroundMusicEnabled && hasUserInteracted) {
+      setTimeout(() => playBackgroundMusic(), 200);
+    }
+  });
+  
+  // Add play event listener
+  backgroundMusic.addEventListener('play', () => {
+    updateBackgroundMusicStatus();
+  });
+  
+  // Add pause event listener
+  backgroundMusic.addEventListener('pause', () => {
+    updateBackgroundMusicStatus();
+  });
+  
+  // Add error handling
+  backgroundMusic.addEventListener('error', (e) => {
+    console.error('Background music error:', e);
+  });
+  
+  // Add load event
+  backgroundMusic.addEventListener('loadeddata', () => {
+    if (backgroundMusicEnabled && hasUserInteracted) {
+      setTimeout(() => playBackgroundMusic(), 200);
+    }
+  });
+  
+  // Add loadstart event
+  backgroundMusic.addEventListener('loadstart', () => {
+    updateGameStatus('Loading background music...');
+  });
+}
+
+function playBackgroundMusic() {
+  if (backgroundMusic && backgroundMusicEnabled && hasUserInteracted) {
+    // Reset to beginning if ended
+    if (backgroundMusic.ended) {
+      backgroundMusic.currentTime = 0;
+    }
+    
+    musicStartAttempts++;
+    
+    const playPromise = backgroundMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        musicStartAttempts = 0; // Reset attempts on success
+        updateGameStatus('🎵 Background music playing');
+        updateBackgroundMusicStatus();
+      }).catch(e => {
+        
+        // Retry after a short delay if we haven't exceeded max attempts
+        if (musicStartAttempts < maxMusicAttempts) {
+          console.log(`Retrying in 1 second... (attempt ${musicStartAttempts}/${maxMusicAttempts})`);
+          setTimeout(() => {
+            if (backgroundMusicEnabled && hasUserInteracted) {
+              playBackgroundMusic();
+            }
+          }, 1000);
+        } else {
+          console.log('Max music start attempts reached');
+          musicStartAttempts = 0;
+        }
+        
+        if (e.name === 'NotAllowedError') {
+          console.log('User interaction required to play background music');
+        }
+      });
+    }
+  }
+}
+
+function pauseBackgroundMusic() {
+  if (backgroundMusic) {
+    backgroundMusic.pause();
+    updateBackgroundMusicStatus();
+  }
+}
+
+function toggleBackgroundMusic(enabled) {
+  backgroundMusicEnabled = enabled;
+  
+  if (enabled && hasUserInteracted) {
+    // Reset attempt counter when manually toggling
+    musicStartAttempts = 0;
+    setTimeout(() => playBackgroundMusic(), 100);
+  } else {
+    pauseBackgroundMusic();
+  }
+  updateBackgroundMusicStatus();
+}
+
+function updateBackgroundMusicStatus() {
+  const toggle = document.getElementById('backgroundMusicEnabled');
+  if (toggle) {
+    toggle.checked = backgroundMusicEnabled;
+  }
+  
+  const musicStatus = document.getElementById('musicStatus');
+  if (musicStatus) {
+    if (backgroundMusicEnabled && backgroundMusic && !backgroundMusic.paused) {
+      musicStatus.textContent = '🎵';
+      musicStatus.classList.add('playing');
+    } else {
+      musicStatus.textContent = '🔇';
+      musicStatus.classList.remove('playing');
+    }
+  }
+}
+
+function setBackgroundMusicVolume(volume) {
+  if (backgroundMusic) {
+    backgroundMusic.volume = volume / 100; // Convert percentage to 0-1 range
+  }
 }
 
 // Audio feedback functions
@@ -786,6 +918,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   initializeBoard();
   updateUI();
+  initializeBackgroundMusic();
 
   // Event listeners
   resetButton.addEventListener("click", () => {
@@ -797,5 +930,118 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
+  // Background music toggle
+  const backgroundMusicToggle = document.getElementById('backgroundMusicEnabled');
+  if (backgroundMusicToggle) {
+    backgroundMusicToggle.addEventListener('change', (e) => {
+      toggleBackgroundMusic(e.target.checked);
+    });
+    // Set initial state
+    backgroundMusicToggle.checked = backgroundMusicEnabled;
+  }
+
+  // Volume control
+  const volumeSlider = document.getElementById('audioVolume');
+  const volumeValue = document.getElementById('volumeValue');
+  if (volumeSlider && volumeValue) {
+    volumeSlider.addEventListener('input', (e) => {
+      const volume = e.target.value;
+      volumeValue.textContent = volume;
+      setBackgroundMusicVolume(volume);
+    });
+    // Set initial volume for background music
+    setBackgroundMusicVolume(volumeSlider.value);
+  }
+  
+  // Initialize music status indicator
+  updateBackgroundMusicStatus();
+
+  // Start background music on first user interaction
+  function enableAudioOnInteraction(event) {
+    if (!hasUserInteracted) {
+      hasUserInteracted = true;
+      console.log('User interaction detected, enabling audio from:', event.type);
+      
+      // Remove the event listeners immediately
+      document.removeEventListener('click', enableAudioOnInteraction, true);
+      document.removeEventListener('keydown', enableAudioOnInteraction, true);
+      document.removeEventListener('touchstart', enableAudioOnInteraction, true);
+      
+      // Remove game board listeners
+      if (gameBoard) {
+        gameBoard.removeEventListener('click', enableAudioOnInteraction, true);
+        gameBoard.removeEventListener('touchstart', enableAudioOnInteraction, true);
+      }
+      
+      // Remove button listeners
+      resetButton.removeEventListener('click', enableAudioOnInteraction, true);
+      
+      // Start music if enabled
+      if (backgroundMusicEnabled && backgroundMusic) {
+        // Reset attempts on new user interaction
+        musicStartAttempts = 0;
+        updateGameStatus('🎵 Starting background music...');
+        setTimeout(() => {
+          console.log('User interaction complete - attempting to start background music...');
+          playBackgroundMusic();
+        }, 200);
+      }
+    }
+  }
+
+  // Add event listeners for user interaction with capture to catch early
+  document.addEventListener('click', enableAudioOnInteraction, true);
+  document.addEventListener('keydown', enableAudioOnInteraction, true);
+  document.addEventListener('touchstart', enableAudioOnInteraction, true);
+  
+  // Also add listeners specifically to the game board for immediate interaction
+  if (gameBoard) {
+    gameBoard.addEventListener('click', enableAudioOnInteraction, true);
+    gameBoard.addEventListener('touchstart', enableAudioOnInteraction, true);
+  }
+  
+  // Add listeners to buttons for immediate interaction
+  resetButton.addEventListener('click', enableAudioOnInteraction, true);
+
+  // Settings panel controls
+  const settingsButton = document.createElement('button');
+  settingsButton.textContent = '⚙️ Settings';
+  settingsButton.className = 'btn secondary';
+  settingsButton.style.marginLeft = '1rem';
+  
+  const gameControls = document.querySelector('.game-controls');
+  if (gameControls) {
+    gameControls.appendChild(settingsButton);
+  }
+
+  const settingsPanel = document.getElementById('settingsPanel');
+  const closeSettingsButton = document.getElementById('closeSettings');
+
+  settingsButton.addEventListener('click', () => {
+    settingsPanel.classList.remove('hidden');
+    // Trigger music on settings open if not already started
+    if (!hasUserInteracted) {
+      hasUserInteracted = true;
+      console.log('User interaction detected via settings button');
+      if (backgroundMusicEnabled && backgroundMusic) {
+        musicStartAttempts = 0;
+        setTimeout(() => {
+          console.log('Starting background music from settings interaction...');
+          playBackgroundMusic();
+        }, 100);
+      }
+    }
+  });
+
+  closeSettingsButton.addEventListener('click', () => {
+    settingsPanel.classList.add('hidden');
+  });
+
+  // Click outside to close settings
+  settingsPanel.addEventListener('click', (e) => {
+    if (e.target === settingsPanel) {
+      settingsPanel.classList.add('hidden');
+    }
+  });
 
 });
