@@ -7,6 +7,7 @@ A prototype of a real-time multiplayer game built with WebSocket technology for 
 A classic strategy game where players take turns drawing lines between dots to complete squares and score points.
 
 **Features:**
+
 - Real-time multiplayer gameplay
 - Turn-based system with scoring
 - Responsive design (desktop & mobile)
@@ -25,35 +26,42 @@ A classic strategy game where players take turns drawing lines between dots to c
 - [ ] Game replay system
 - [ ] Additional cooperative games
 
-
 ## Game Environment
+
 ### The main screen
+
 <img src="./res/game.png" width="350" alt="Game on">
 
 ### Board State at the beginning
+
 <img src="./res/start.png" width="350" alt="Game Board">
 
 ### Board possible state at the end
+
 <img src="./res/end.png" width="350" alt="Game on">
 
 ### When you win
+
 <img src="./res/won.png" width="350" alt="Game Won">
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - pnpm (recommended) or npm
 
 ### Installation/Development
 
 1. Clone the repository:
+
 ```bash
 git clone --depth 1  https://github.com/miladtsx/realtime_coop_prototype
 cd realtime_coop_prototype
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 # or
@@ -61,6 +69,7 @@ npm install
 ```
 
 3. Start the server:
+
 ```bash
 pnpm start
 # or
@@ -71,10 +80,10 @@ npm start
 
 5. Now you should open your file explorer and navigate to the `docs` and open [index.html](./docs/index.html) inside your browser. it should connect to the backend server address specified as the [BACKEND_WS_URL](./docs/dots-lines.js#L2).
 
-5. Open another instance of the game in a new browser tab or window to start playing the game.
-
+6. Open another instance of the game in a new browser tab or window to start playing the game.
 
 For development with auto-restart:
+
 ```bash
 pnpm run dev
 # or
@@ -96,15 +105,36 @@ realtime_coop_prototype/
 └── README.md               # This file
 ```
 
+## Multiplayer Flowchart
+
+```mermaid
+flowchart TD
+    A[Player 1 connects] --> B[Server creates game session]
+    B --> C{Is Player 2 connected?}
+    C -- No --> D[Wait for Player 2]
+    C -- Yes --> E[Player 2 connects]
+    E --> F[Game starts]
+    F --> G[Set initial turn]
+    G --> H{Is game over?}
+    H -- No --> I[Player 1 takes first turn]
+    I --> J[Update game state]
+    J --> K[Broadcast state to both players]
+    K --> L[Switch turn to other player]
+    L --> H
+    H -- Yes --> M[Game ends]
+```
+
 ## 🔧 Technical Stack
 
 ### Backend
+
 - **Node.js + Express**: Web server
 - **WebSocket (ws)**: Real-time bidirectional communication
 - **CORS**: Cross-origin resource sharing
 - **dotenv**: Environment variable management
 
 ### Frontend
+
 - **HTML5 SVG**: Game board rendering
 - **Vanilla JavaScript**: Game logic & WebSocket client
 - **CSS3**: Modern styling with responsive design
@@ -123,11 +153,13 @@ realtime_coop_prototype/
 ## 🌐 WebSocket API
 
 ### Client Messages
+
 - `{ type: "join", game: "dots-lines" }` - Join game queue
 - `{ type: "move", game: "dots-lines", lineId: "horizontal-1-2", player: 1 }` - Make move
 - `{ type: "reset", game: "dots-lines" }` - Reset current game
 
 ### Server Messages
+
 - `{ type: "player-assigned", playerId: 1, gameId: "abc123" }` - Player assignment
 - `{ type: "game-start" }` - Game begins
 - `{ type: "move-made", lineId: "horizontal-1-2", player: 1, completedSquares: [], scores: {1: 0, 2: 0}, currentPlayer: 2 }` - Move broadcast
@@ -149,6 +181,7 @@ realtime_coop_prototype/
 ## 🔒 Environment Variables
 
 Create a `.env` file for configuration:
+
 ```
 PORT=3000
 ```
@@ -158,12 +191,14 @@ PORT=3000
 ### Production Setup
 
 1. Set environment variables:
+
 ```bash
 export NODE_ENV=production
 export PORT=3000
 ```
 
 2. Start the server:
+
 ```bash
 node backend/index.js
 ```
