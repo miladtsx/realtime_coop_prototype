@@ -51,15 +51,29 @@
           </h2>
           <ul
             style="
-              font-size: 1.1rem;
-              color: #444;
+              font-size: 1.2rem;
+              color: #ff7f50;
               font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+              list-style: none;
+              padding: 0;
+              margin: 1.2rem 0 1.5rem 0;
             "
           >
-            <li>Take turns drawing lines between dots</li>
-            <li>When you complete a square, you score a point</li>
-            <li>If you complete a square, you get another turn</li>
-            <li>Player with most squares wins!</li>
+            <li style="margin-bottom: 1rem; display: flex; align-items: center">
+              <span style="font-size: 1.5rem; margin-right: 0.7rem">🖍️</span>
+              <span>Take turns drawing lines between two dots.</span>
+            </li>
+            <li style="margin-bottom: 1rem; display: flex; align-items: center">
+              <span style="font-size: 1.5rem; margin-right: 0.7rem">🎁</span>
+              <span>Finish a box? You score 1 point and go again!</span>
+            </li>
+            <li style="display: flex; align-items: center">
+              <span style="font-size: 1.5rem; margin-right: 0.7rem">🏆</span>
+              <span
+                >When all boxes are filled, the player with most points
+                wins.</span
+              >
+            </li>
           </ul>
           <button
             id="closeHelpModal"

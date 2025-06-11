@@ -837,11 +837,6 @@ function setOnlineUI() {
 
 // --- AI LOGIC ---
 function aiMakeMove() {
-    gameMode: gameState.gameMode,
-    gameActive: gameState.gameActive,
-    currentPlayer: gameState.currentPlayer
-  });
-
   // Only act if it's AI's turn and single player mode is active
   if (gameState.gameMode !== 'single' || !gameState.gameActive || gameState.currentPlayer !== 2) {
     return;
