@@ -197,12 +197,14 @@ h1 {
     stroke: #ff0040;
     opacity: 1;
     filter: drop-shadow(0 0 8px #ff0040) drop-shadow(0 0 16px #ff0040) drop-shadow(0 0 24px #ff0040);
+    stroke-width: 10;
 }
 
 .line.player2 {
     stroke: #0080ff;
     opacity: 1;
     filter: drop-shadow(0 0 8px #0080ff) drop-shadow(0 0 16px #0080ff) drop-shadow(0 0 24px #0080ff);
+    stroke-width: 10;
 }
 
 .square {
