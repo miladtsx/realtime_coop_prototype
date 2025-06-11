@@ -319,7 +319,19 @@ h1 {
 }
 
 .game-info-compact {
-    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    gap: 0.7rem;
+}
+
+.game-info-compact .help-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.2rem;
 }
 
 .mobile-status-bar {
@@ -474,11 +486,11 @@ h1 {
 
     .game-info-compact {
         display: flex;
-        justify-content: space-around;
+        justify-content: center;
         align-items: center;
         margin-bottom: 1rem;
         font-size: 0.9rem;
-        gap: 1rem;
+        gap: 0.7rem;
     }
 
     .mobile-status-bar {
@@ -582,6 +594,16 @@ h1 {
 
     .line.available.touch-preview {
         stroke-width: 7;
+    }
+
+    .game-info-compact {
+        gap: 0.4rem;
+    }
+
+    .game-info-compact .help-btn {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.1rem;
     }
 }
 

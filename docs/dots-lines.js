@@ -1300,4 +1300,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Help modal logic for both desktop and mobile help buttons
+  const helpBtn = document.getElementById('helpBtn');
+  const helpBtnMobile = document.getElementById('helpBtnMobile');
+  const helpModal = document.getElementById('helpModal');
+  const closeHelpModal = document.getElementById('closeHelpModal');
+  if (helpBtn) {
+    helpBtn.addEventListener('click', () => {
+      helpModal.classList.remove('hidden');
+    });
+  }
+  if (helpBtnMobile) {
+    helpBtnMobile.addEventListener('click', () => {
+      helpModal.classList.remove('hidden');
+    });
+  }
+  if (closeHelpModal) {
+    closeHelpModal.addEventListener('click', () => {
+      helpModal.classList.add('hidden');
+    });
+  }
 });

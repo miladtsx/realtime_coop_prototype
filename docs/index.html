@@ -19,39 +19,7 @@
             justify-content: center;
             gap: 1.5rem;
           "
-        >
-          <div class="player player1">
-            <span>Player 1: <span id="score1">0</span></span>
-          </div>
-          <button
-            id="helpBtn"
-            class="help-btn"
-            title="How to Play"
-            style="
-              background: #fffbe7;
-              color: #ff7f50;
-              border-radius: 50%;
-              width: 2.5rem;
-              height: 2.5rem;
-              font-size: 1.5rem;
-              font-weight: bold;
-              box-shadow: 0 2px 8px #ffd580;
-              border: 2px solid #ffe066;
-              margin: 0 0.5rem;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              transition: transform 0.1s;
-              outline: none;
-            "
-          >
-            ?
-          </button>
-          <div class="player player2">
-            <span>Player 2: <span id="score2">0</span></span>
-          </div>
-        </div>
+        ></div>
         <div class="game-status">
           <div class="connection-indicator desktop-connection">
             <div class="connection-dot" id="connectionDotDesktop"></div>
@@ -115,6 +83,31 @@
         <div class="player player1">
           <span>P1: <span id="score1Mobile">0</span></span>
         </div>
+        <button
+          id="helpBtnMobile"
+          class="help-btn"
+          title="How to Play"
+          style="
+            background: #fffbe7;
+            color: #ff7f50;
+            border-radius: 50%;
+            width: 2.2rem;
+            height: 2.2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #ffd580;
+            border: 2px solid #ffe066;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+            outline: none;
+          "
+        >
+          ?
+        </button>
         <div class="player player2">
           <span>P2: <span id="score2Mobile">0</span></span>
         </div>
@@ -190,7 +183,7 @@
     <script src="dots-lines.js"></script>
     <script>
       // Help modal logic
-      const helpBtn = document.getElementById("helpBtn");
+      const helpBtn = document.getElementById("helpBtnMobile");
       const helpModal = document.getElementById("helpModal");
       const closeHelpModal = document.getElementById("closeHelpModal");
       helpBtn.addEventListener("click", () => {
