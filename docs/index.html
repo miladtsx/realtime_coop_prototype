@@ -9,21 +9,45 @@
   <body>
     <div class="container">
       <h1>CONNECT THE DOTS</h1>
-      <div class="instructions">
-        <h3>How to Play</h3>
-        <ul>
-          <li>Take turns drawing lines between dots</li>
-          <li>When you complete a square, you score a point</li>
-          <li>If you complete a square, you get another turn</li>
-          <li>Player with most squares wins!</li>
-        </ul>
-      </div>
 
       <div class="game-info">
-        <div class="player-info">
+        <div
+          class="player-info"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+          "
+        >
           <div class="player player1">
             <span>Player 1: <span id="score1">0</span></span>
           </div>
+          <button
+            id="helpBtn"
+            class="help-btn"
+            title="How to Play"
+            style="
+              background: #fffbe7;
+              color: #ff7f50;
+              border-radius: 50%;
+              width: 2.5rem;
+              height: 2.5rem;
+              font-size: 1.5rem;
+              font-weight: bold;
+              box-shadow: 0 2px 8px #ffd580;
+              border: 2px solid #ffe066;
+              margin: 0 0.5rem;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: transform 0.1s;
+              outline: none;
+            "
+          >
+            ?
+          </button>
           <div class="player player2">
             <span>Player 2: <span id="score2">0</span></span>
           </div>
@@ -34,6 +58,56 @@
             <span class="connection-text">Server</span>
           </div>
           <span id="gameStatus">Waiting for players...</span>
+        </div>
+      </div>
+
+      <!-- Help Modal -->
+      <div id="helpModal" class="modal hidden">
+        <div
+          class="modal-content themed-mode-modal"
+          style="
+            border-radius: 1.5rem;
+            background: #fffbe7;
+            border: 3px solid #ffe066;
+            box-shadow: 0 4px 24px #ffd580;
+          "
+        >
+          <h2
+            style="
+              color: #ff7f50;
+              text-align: center;
+              font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+            "
+          >
+            How to Play
+          </h2>
+          <ul
+            style="
+              font-size: 1.1rem;
+              color: #444;
+              font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+            "
+          >
+            <li>Take turns drawing lines between dots</li>
+            <li>When you complete a square, you score a point</li>
+            <li>If you complete a square, you get another turn</li>
+            <li>Player with most squares wins!</li>
+          </ul>
+          <button
+            id="closeHelpModal"
+            class="btn"
+            style="
+              background: #ffe066;
+              color: #ff7f50;
+              border-radius: 1rem;
+              font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+              font-size: 1.1rem;
+              margin: 0 auto;
+              display: block;
+            "
+          >
+            Close
+          </button>
         </div>
       </div>
 
@@ -114,5 +188,21 @@
       </div>
     </div>
     <script src="dots-lines.js"></script>
+    <script>
+      // Help modal logic
+      const helpBtn = document.getElementById("helpBtn");
+      const helpModal = document.getElementById("helpModal");
+      const closeHelpModal = document.getElementById("closeHelpModal");
+      helpBtn.addEventListener("click", () => {
+        helpModal.classList.remove("hidden");
+      });
+      closeHelpModal.addEventListener("click", () => {
+        helpModal.classList.add("hidden");
+      });
+      // Optional: close modal on outside click
+      helpModal.addEventListener("click", (e) => {
+        if (e.target === helpModal) helpModal.classList.add("hidden");
+      });
+    </script>
   </body>
 </html>
