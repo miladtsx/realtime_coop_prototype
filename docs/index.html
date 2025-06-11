@@ -78,11 +78,7 @@
           <!-- Dots and lines will be generated here -->
         </svg>
       </div>
-      <div class="game-controls">
-        <button id="resetGame" class="btn" onclick="resetGameAll()">
-          Reset Game
-        </button>
-      </div>
+      <div id="resetGame" class="game-controls"></div>
 
       <div id="settingsPanel" class="settings-panel hidden">
         <div class="settings-content">
@@ -113,80 +109,5 @@
       </div>
     </div>
     <script src="dots-lines.js"></script>
-    <script>
-      // --- Reset Game Logic ---
-      function resetGameAll() {
-        // Reset scores
-        document.getElementById("score1").textContent = "0";
-        document.getElementById("score2").textContent = "0";
-        document.getElementById("score1Mobile").textContent = "0";
-        document.getElementById("score2Mobile").textContent = "0";
-
-        // Reset status
-        document.getElementById("gameStatus").textContent =
-          "Waiting for players...";
-        document.getElementById("gameStatusMobile").textContent =
-          "Waiting for players...";
-
-        // Hide modals/settings
-        document.getElementById("modeModal").classList.add("hidden");
-        document.getElementById("settingsPanel").classList.add("hidden");
-
-        // Show start overlay (start page)
-        var startOverlay = document.getElementById("startOverlay");
-        if (startOverlay) {
-          startOverlay.classList.remove("hidden");
-          startOverlay.classList.add("active");
-          startOverlay.style.display = "flex"; // Ensure visible
-        }
-
-        // Reset any overlays, modals, or game-specific UI
-        // ...add more UI resets here if needed...
-
-        // Stop background music if playing
-        if (window.backgroundMusic && !window.backgroundMusic.paused) {
-          window.backgroundMusic.pause();
-          window.backgroundMusic.currentTime = 0;
-          console.log("Background music stopped.");
-        } else {
-          // Fallback: pause all audio elements
-          var audios = document.getElementsByTagName("audio");
-          for (var i = 0; i < audios.length; i++) {
-            audios[i].pause();
-            audios[i].currentTime = 0;
-          }
-          console.log("All audio elements stopped.");
-        }
-        // Uncheck music checkbox and update icon
-        var musicCheckbox = document.getElementById("backgroundMusicEnabled");
-        if (musicCheckbox) musicCheckbox.checked = false;
-        var musicStatus = document.getElementById("musicStatus");
-        if (musicStatus) musicStatus.textContent = "🔇";
-
-        // Clear the game board (SVG)
-        var svg = document.getElementById("gameBoard");
-        if (svg) {
-          while (svg.lastChild) svg.removeChild(svg.lastChild);
-        }
-
-        // Reset any global JS state if needed
-        if (typeof window.resetGameState === "function") {
-          window.resetGameState();
-        }
-
-        // Attempt to reconnect to the socket if available
-        if (typeof window.reconnectSocket === "function") {
-          window.reconnectSocket();
-        } else if (window.socket && typeof window.socket.close === "function") {
-          try {
-            window.socket.close();
-          } catch (e) {}
-          // Optionally, re-initialize socket connection logic here
-          if (typeof window.initSocket === "function") {
-            window.initSocket();
-          }
-        }
-      }
-    </script>
   </body>
 </html>

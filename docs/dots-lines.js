@@ -28,7 +28,6 @@ const gameStatus = document.getElementById("gameStatus");
 const gameStatusMobile = document.getElementById("gameStatusMobile");
 const connectionDot = document.getElementById("connectionDot");
 const connectionDotDesktop = document.getElementById("connectionDotDesktop");
-const resetButton = document.getElementById("resetGame");
 
 // Get player score box elements for highlighting
 const player1Box = document.querySelector(".game-info .player1");
@@ -38,7 +37,7 @@ const player2BoxMobile = document.querySelector(".game-info-compact .player2");
 
 // Background music variables
 let backgroundMusic = null;
-let backgroundMusicEnabled = true;
+let backgroundMusicEnabled = false;
 let hasUserInteracted = false;
 let musicStartAttempts = 0;
 let maxMusicAttempts = 3;
@@ -1185,16 +1184,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateUI();
   initializeBackgroundMusic();
 
-  // Event listeners
-  resetButton.addEventListener("click", () => {
-    socket.send(
-      JSON.stringify({
-        type: "reset",
-        game: "dots-lines",
-      }),
-    );
-  });
-
   // Background music toggle
   const backgroundMusicToggle = document.getElementById('backgroundMusicEnabled');
   if (backgroundMusicToggle) {
@@ -1238,9 +1227,6 @@ document.addEventListener("DOMContentLoaded", () => {
         gameBoard.removeEventListener('touchstart', enableAudioOnInteraction, true);
       }
       
-      // Remove button listeners
-      resetButton.removeEventListener('click', enableAudioOnInteraction, true);
-      
       // Start music if enabled
       if (backgroundMusicEnabled && backgroundMusic) {
         // Reset attempts on new user interaction
@@ -1265,9 +1251,6 @@ document.addEventListener("DOMContentLoaded", () => {
     gameBoard.addEventListener('touchstart', enableAudioOnInteraction, true);
   }
   
-  // Add listeners to buttons for immediate interaction
-  resetButton.addEventListener('click', enableAudioOnInteraction, true);
-
   // Settings panel controls
   const settingsButton = document.createElement('button');
   settingsButton.textContent = '⚙️ Settings';

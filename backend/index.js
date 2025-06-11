@@ -55,10 +55,6 @@ function handleDotsLinesMessage(ws, data) {
     case "move":
       handlePlayerMove(ws, data);
       break;
-      
-    case "reset":
-      handleGameReset(ws);
-      break;
   }
 }
 
@@ -167,45 +163,6 @@ function handlePlayerMove(ws, data) {
   if (game.player2) {
     game.player2.send(JSON.stringify(moveMessage));
   }
-}
-
-function handleGameReset(ws) {
-  const game = dotsLinesGames.get(ws.gameId);
-  if (!game || !game.player2) return;
-  
-  // Determine the other player (winner by forfeit)
-  const winner = ws.playerId === 1 ? 2 : 1;
-  
-  // Send personalized messages to each player
-  const resetterMessage = {
-    type: "game-ended-by-reset",
-    winner: winner,
-    reason: "You reset the game"
-  };
-  
-  const otherPlayerMessage = {
-    type: "game-ended-by-reset",
-    winner: winner,
-    reason: "The other player reset the game"
-  };
-  
-  // Send personalized message to the player who reset
-  ws.send(JSON.stringify(resetterMessage));
-  
-  // Send personalized message to the other player
-  const otherPlayer = ws.playerId === 1 ? game.player2 : game.player1;
-  otherPlayer.send(JSON.stringify(otherPlayerMessage));
-  
-  // Reset game state after declaring winner
-  game.lines.clear();
-  game.squares.clear();
-  game.currentPlayer = 1;
-  game.scores = { 1: 0, 2: 0 };
-  
-  // Notify both players that game is now reset and ready to restart
-  const resetMessage = { type: "game-reset" };
-  game.player1.send(JSON.stringify(resetMessage));
-  game.player2.send(JSON.stringify(resetMessage));
 }
 
 function handlePlayerDisconnect(ws) {
