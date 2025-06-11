@@ -14,6 +14,7 @@ let gameState = {
   hoveredLine: null,
   touchHoldTimer: null,
   touchStarted: false,
+  gameMode: 'single', // default
 };
 
 // DOM elements
@@ -352,8 +353,11 @@ function handleLineClick(event, line) {
     return;
   }
 
-  // Check if it's the player's turn
-  if (gameState.currentPlayer !== gameState.playerId) {
+  // Only block if it's not the human's turn in single player, or not your turn in multiplayer
+  if (
+    (gameState.gameMode === 'multi' && gameState.currentPlayer !== gameState.playerId) ||
+    (gameState.gameMode === 'single' && gameState.currentPlayer === 1 && gameState.playerId !== 1)
+  ) {
     // Provide visual feedback by briefly highlighting the current player's box
     const currentPlayerBox = gameState.currentPlayer === 1 ? player1Box : player2Box;
     const currentPlayerBoxMobile = gameState.currentPlayer === 1 ? player1BoxMobile : player2BoxMobile;
@@ -381,7 +385,7 @@ function handleLineClick(event, line) {
   
   // Provide immediate visual feedback
   line.classList.remove("available");
-  line.classList.add(`player${gameState.playerId}`);
+  line.classList.add(`player${gameState.currentPlayer}`); // Use currentPlayer for both human and AI
   line.style.opacity = "0.8";
   
   // Disable the entire line group
@@ -393,7 +397,38 @@ function handleLineClick(event, line) {
 
   // Play move sound
   playSound('move');
-  
+
+  // --- SINGLE PLAYER LOGIC ---
+  if (gameState.gameMode === 'single') {
+    // Locally update game state
+    gameState.lines.add(lineId);
+    // Check for completed squares
+    const completedSquares = checkForCompletedSquares(lineId);
+    if (completedSquares.length > 0) {
+      completedSquares.forEach((squareKey) => {
+        const [srow, scol] = squareKey.split("-").map(Number);
+        completeSquare(srow, scol, gameState.currentPlayer);
+      });
+      // Play completion sound and haptic
+      playSound('complete');
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100, 50, 100]);
+      }
+      // Player gets another turn
+    } else {
+      // Switch turn
+      gameState.currentPlayer = (gameState.currentPlayer === 1) ? 2 : 1;
+    }
+    updateUI();
+    checkGameEnd();
+    // If it's now AI's turn and game is active, let AI play
+    if (gameState.gameActive && gameState.currentPlayer === 2) {
+      setTimeout(aiMakeMove, 600);
+    }
+    return;
+  }
+
+  // --- MULTIPLAYER LOGIC ---
   // Send move to server
   socket.send(
     JSON.stringify({
@@ -777,6 +812,89 @@ function showCelebration(title, subtitle) {
   }, 5000);
 }
 
+// --- GAME MODE SUPPORT ---
+// Add gameMode to state: 'single' (vs AI) or 'multi' (online)
+gameState.gameMode = 'single'; // default
+
+// Store socket reference only for multiplayer
+let multiplayerSocket = null;
+
+// Utility: get selected mode from UI
+function getSelectedGameMode() {
+  const single = document.getElementById('modeSingle');
+  return single && single.checked ? 'single' : 'multi';
+}
+
+// Utility: set connection indicators for offline
+function setOfflineUI() {
+  if (connectionDot) connectionDot.style.opacity = 0.3;
+  if (connectionDotDesktop) connectionDotDesktop.style.opacity = 0.3;
+}
+
+// Utility: set connection indicators for online
+function setOnlineUI() {
+  if (connectionDot) connectionDot.style.opacity = 1;
+  if (connectionDotDesktop) connectionDotDesktop.style.opacity = 1;
+}
+
+// --- AI LOGIC ---
+function aiMakeMove() {
+  // Only act if it's AI's turn and single player mode
+  if (gameState.gameMode !== 'single' || !gameState.gameActive || gameState.currentPlayer !== 2) return;
+  // Find all available lines
+  const availableLines = Array.from(document.querySelectorAll('.line.available'));
+  if (availableLines.length === 0) return;
+
+  // Try to find a move that completes a square (greedy)
+  let bestLine = null;
+  for (const line of availableLines) {
+    const type = line.getAttribute('data-type');
+    const row = parseInt(line.getAttribute('data-row'));
+    const col = parseInt(line.getAttribute('data-col'));
+    const lineId = `${type}-${row}-${col}`;
+    // Simulate adding this line
+    gameState.lines.add(lineId);
+    const completed = checkForCompletedSquares(lineId);
+    gameState.lines.delete(lineId);
+    if (completed.length > 0) {
+      bestLine = line;
+      break;
+    }
+  }
+  // If no greedy move, pick random
+  const chosenLine = bestLine || availableLines[Math.floor(Math.random() * availableLines.length)];
+  // Simulate AI click
+  setTimeout(() => {
+    handleLineClick({ai:true}, chosenLine);
+    // If AI gets another turn (completes a square), it will be called again from handleLineClick
+    // Otherwise, turn passes to player
+  }, 400);
+}
+
+// --- MODE SWITCH HANDLER ---
+function handleModeChange() {
+  gameState.gameMode = getSelectedGameMode();
+  if (gameState.gameMode === 'single') {
+    setOfflineUI();
+    resetGame();
+  } else {
+    setOnlineUI();
+    // Only connect if not already connected
+    if (!multiplayerSocket || multiplayerSocket.readyState !== 1) {
+      connectWebSocket();
+    }
+    resetGame();
+  }
+}
+
+// Attach mode change listeners
+const modeSingle = document.getElementById('modeSingle');
+const modeMulti = document.getElementById('modeMulti');
+if (modeSingle && modeMulti) {
+  modeSingle.addEventListener('change', handleModeChange);
+  modeMulti.addEventListener('change', handleModeChange);
+}
+
 // WebSocket handlers
 socket.onopen = () => {
   console.log("Connected to server");
@@ -911,6 +1029,133 @@ socket.onclose = (event) => {
   gameState.gameActive = false;
 };
 
+// --- START OVERLAY & MODE MODAL LOGIC ---
+(function() {
+  const startOverlay = document.getElementById('startOverlay');
+  const startGameBtn = document.getElementById('startGameBtn');
+  const modeModal = document.getElementById('modeModal');
+  const singleModeBtn = document.getElementById('singleModeBtn');
+  const multiModeBtn = document.getElementById('multiModeBtn');
+  const container = document.querySelector('.container');
+
+  // Helper to blur/unblur game area
+  function setGameBlur(active) {
+    if (active) {
+      container.classList.add('blur-when-inactive');
+    } else {
+      container.classList.remove('blur-when-inactive');
+    }
+  }
+
+  // Show overlay and blur on load
+  setGameBlur(true);
+  startOverlay.classList.add('active');
+  modeModal.classList.add('hidden');
+
+  // Enable/disable multiplayer button based on websocket
+  function updateMultiBtn() {
+    if (typeof socket !== 'undefined' && socket.readyState === 1) {
+      multiModeBtn.disabled = false;
+    } else {
+      multiModeBtn.disabled = true;
+    }
+  }
+
+  if (typeof socket !== 'undefined') {
+    socket.addEventListener('open', updateMultiBtn);
+    socket.addEventListener('close', updateMultiBtn);
+    socket.addEventListener('error', updateMultiBtn);
+  }
+  setInterval(updateMultiBtn, 1000);
+
+  // Fade helpers
+  function fadeOut(el, cb) {
+    el.style.transition = 'opacity 0.4s';
+    el.style.opacity = 0;
+    setTimeout(() => {
+      el.classList.add('hidden');
+      el.style.transition = '';
+      el.style.opacity = '';
+      el.style.display = 'none'; // Ensure overlay is not blocking
+      if (cb) cb();
+    }, 400);
+  }
+  function fadeIn(el) {
+    el.classList.remove('hidden');
+    el.style.display = '';
+    el.style.opacity = 0;
+    el.style.transition = 'opacity 0.4s';
+    setTimeout(() => {
+      el.style.opacity = 1;
+    }, 10);
+    setTimeout(() => {
+      el.style.transition = '';
+      el.style.opacity = '';
+    }, 410);
+  }
+
+  // Start button click: hide overlay, show modal
+  startGameBtn.addEventListener('click', function() {
+    fadeOut(startOverlay, () => fadeIn(modeModal));
+    setTimeout(updateMultiBtn, 100);
+  });
+
+  // Mode selection
+  singleModeBtn.addEventListener('click', function() {
+    gameState.gameMode = 'single';
+    fadeOut(modeModal, () => setGameBlur(false));
+    setOfflineUI();
+    resetGame();
+  });
+  multiModeBtn.addEventListener('click', function() {
+    if (multiModeBtn.disabled) return;
+    gameState.gameMode = 'multi';
+    fadeOut(modeModal, () => setGameBlur(false));
+    setOnlineUI();
+    resetGame();
+  });
+
+  setGameBlur(true);
+})();
+
+// --- PATCH: Ensure playerId is set in single player mode ---
+function ensurePlayerIdForSinglePlayer() {
+  if (gameState.gameMode === 'single') {
+    gameState.playerId = 1;
+  }
+}
+
+// Patch resetGame to set playerId for single player
+const originalResetGame = resetGame;
+resetGame = function() {
+  ensurePlayerIdForSinglePlayer();
+  originalResetGame();
+};
+
+// Patch mode change handler to set playerId
+const originalHandleModeChange = handleModeChange;
+handleModeChange = function() {
+  originalHandleModeChange();
+  ensurePlayerIdForSinglePlayer();
+  updateUI();
+};
+
+// On DOMContentLoaded, set playerId if single player
+const originalDOMContentLoaded = document.addEventListener;
+document.addEventListener = function(type, listener, options) {
+  if (type === 'DOMContentLoaded') {
+    const wrappedListener = function(event) {
+      ensurePlayerIdForSinglePlayer();
+      listener(event);
+    };
+    originalDOMContentLoaded.call(document, type, wrappedListener, options);
+  } else {
+    originalDOMContentLoaded.call(document, type, listener, options);
+  }
+};
+
+// --- END PATCH ---
+
 function resetGame() {
   gameState.lines.clear();
   gameState.squares.clear();
@@ -1014,7 +1259,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener('keydown', enableAudioOnInteraction, true);
   document.addEventListener('touchstart', enableAudioOnInteraction, true);
   
-  // Also add listeners specifically to the game board for immediate interaction
+  // Also add listeners specifically to the game Board for immediate interaction
   if (gameBoard) {
     gameBoard.addEventListener('click', enableAudioOnInteraction, true);
     gameBoard.addEventListener('touchstart', enableAudioOnInteraction, true);

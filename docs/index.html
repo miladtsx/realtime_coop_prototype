@@ -1,107 +1,192 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Connect The Dots Game</title>
-        <link rel="stylesheet" href="dots-lines.css" />
-    </head>
-    <body>
-        <div class="container">
-            <h1>CONNECT THE DOTS</h1>
-            <div class="instructions">
-                <h3>How to Play</h3>
-                <ul>
-                    <li>Take turns drawing lines between dots</li>
-                    <li>When you complete a square, you score a point</li>
-                    <li>If you complete a square, you get another turn</li>
-                    <li>Player with most squares wins!</li>
-                </ul>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connect The Dots Game</title>
+    <link rel="stylesheet" href="dots-lines.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>CONNECT THE DOTS</h1>
+      <div class="instructions">
+        <h3>How to Play</h3>
+        <ul>
+          <li>Take turns drawing lines between dots</li>
+          <li>When you complete a square, you score a point</li>
+          <li>If you complete a square, you get another turn</li>
+          <li>Player with most squares wins!</li>
+        </ul>
+      </div>
 
-            <div class="game-info">
-                <div class="player-info">
-                    <div class="player player1">
-                        <span>Player 1: <span id="score1">0</span></span>
-                    </div>
-                    <div class="player player2">
-                        <span>Player 2: <span id="score2">0</span></span>
-                    </div>
-                </div>
-                <div class="game-status">
-                    <div class="connection-indicator desktop-connection">
-                        <div
-                            class="connection-dot"
-                            id="connectionDotDesktop"
-                        ></div>
-                        <span class="connection-text">Server</span>
-                    </div>
-                    <span id="gameStatus">Waiting for players...</span>
-                </div>
-            </div>
-
-            <div class="game-info-compact">
-                <div class="player player1">
-                    <span>P1: <span id="score1Mobile">0</span></span>
-                </div>
-                <div class="player player2">
-                    <span>P2: <span id="score2Mobile">0</span></span>
-                </div>
-            </div>
-
-            <div class="mobile-status-bar">
-                <div class="connection-indicator">
-                    <div class="connection-dot" id="connectionDot"></div>
-                    <span class="connection-text">Connection</span>
-                </div>
-                <div class="mobile-game-status">
-                    <span id="gameStatusMobile">Waiting for players...</span>
-                </div>
-            </div>
-            <div class="game-board-container">
-                <svg id="gameBoard" class="game-board" viewBox="0 0 400 400">
-                    <!-- Dots and lines will be generated here -->
-                </svg>
-            </div>
-            <div class="game-controls">
-                <button id="resetGame" class="btn">Reset Game</button>
-            </div>
-
-            <div id="settingsPanel" class="settings-panel hidden">
-                <div class="settings-content">
-                    <h3>Game Settings</h3>
-                    <div class="setting-item">
-                        <label>
-                            <input
-                                type="checkbox"
-                                id="backgroundMusicEnabled"
-                            />
-                            <span
-                                >Background Music
-                                <span id="musicStatus" class="music-status"
-                                    >🔇</span
-                                ></span
-                            >
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input
-                                type="range"
-                                id="audioVolume"
-                                min="0"
-                                max="100"
-                                value="50"
-                            />
-                            <span
-                                >Volume: <span id="volumeValue">50</span>%</span
-                            >
-                        </label>
-                    </div>
-                    <button id="closeSettings" class="btn">Close</button>
-                </div>
-            </div>
+      <div class="game-info">
+        <div class="player-info">
+          <div class="player player1">
+            <span>Player 1: <span id="score1">0</span></span>
+          </div>
+          <div class="player player2">
+            <span>Player 2: <span id="score2">0</span></span>
+          </div>
         </div>
-        <script src="dots-lines.js"></script>
-    </body>
+        <div class="game-status">
+          <div class="connection-indicator desktop-connection">
+            <div class="connection-dot" id="connectionDotDesktop"></div>
+            <span class="connection-text">Server</span>
+          </div>
+          <span id="gameStatus">Waiting for players...</span>
+        </div>
+      </div>
+
+      <div class="game-info-compact">
+        <div class="player player1">
+          <span>P1: <span id="score1Mobile">0</span></span>
+        </div>
+        <div class="player player2">
+          <span>P2: <span id="score2Mobile">0</span></span>
+        </div>
+      </div>
+
+      <div class="mobile-status-bar">
+        <div class="connection-indicator">
+          <div class="connection-dot" id="connectionDot"></div>
+          <span class="connection-text">Connection</span>
+        </div>
+        <div class="mobile-game-status">
+          <span id="gameStatusMobile">Waiting for players...</span>
+        </div>
+      </div>
+
+      <!-- Start Overlay -->
+      <div id="startOverlay" class="start-overlay active">
+        <button id="startGameBtn" class="btn start-btn">Start</button>
+      </div>
+      <!-- Game Mode Modal -->
+      <div id="modeModal" class="modal hidden">
+        <div class="modal-content">
+          <h2>Select Game Mode</h2>
+          <button id="singleModeBtn" class="btn mode-btn">
+            Single Player (vs AI or offline)
+          </button>
+          <button id="multiModeBtn" class="btn mode-btn" disabled>
+            Multiplayer (Online)
+          </button>
+        </div>
+      </div>
+
+      <div class="game-board-container">
+        <svg id="gameBoard" class="game-board" viewBox="0 0 400 400">
+          <!-- Dots and lines will be generated here -->
+        </svg>
+      </div>
+      <div class="game-controls">
+        <button id="resetGame" class="btn" onclick="resetGameAll()">
+          Reset Game
+        </button>
+      </div>
+
+      <div id="settingsPanel" class="settings-panel hidden">
+        <div class="settings-content">
+          <h3>Game Settings</h3>
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="backgroundMusicEnabled" />
+              <span
+                >Background Music
+                <span id="musicStatus" class="music-status">🔇</span></span
+              >
+            </label>
+          </div>
+          <div class="setting-item">
+            <label>
+              <input
+                type="range"
+                id="audioVolume"
+                min="0"
+                max="100"
+                value="50"
+              />
+              <span>Volume: <span id="volumeValue">50</span>%</span>
+            </label>
+          </div>
+          <button id="closeSettings" class="btn">Close</button>
+        </div>
+      </div>
+    </div>
+    <script src="dots-lines.js"></script>
+    <script>
+      // --- Reset Game Logic ---
+      function resetGameAll() {
+        // Reset scores
+        document.getElementById("score1").textContent = "0";
+        document.getElementById("score2").textContent = "0";
+        document.getElementById("score1Mobile").textContent = "0";
+        document.getElementById("score2Mobile").textContent = "0";
+
+        // Reset status
+        document.getElementById("gameStatus").textContent =
+          "Waiting for players...";
+        document.getElementById("gameStatusMobile").textContent =
+          "Waiting for players...";
+
+        // Hide modals/settings
+        document.getElementById("modeModal").classList.add("hidden");
+        document.getElementById("settingsPanel").classList.add("hidden");
+
+        // Show start overlay (start page)
+        var startOverlay = document.getElementById("startOverlay");
+        if (startOverlay) {
+          startOverlay.classList.remove("hidden");
+          startOverlay.classList.add("active");
+          startOverlay.style.display = "flex"; // Ensure visible
+        }
+
+        // Reset any overlays, modals, or game-specific UI
+        // ...add more UI resets here if needed...
+
+        // Stop background music if playing
+        if (window.backgroundMusic && !window.backgroundMusic.paused) {
+          window.backgroundMusic.pause();
+          window.backgroundMusic.currentTime = 0;
+          console.log("Background music stopped.");
+        } else {
+          // Fallback: pause all audio elements
+          var audios = document.getElementsByTagName("audio");
+          for (var i = 0; i < audios.length; i++) {
+            audios[i].pause();
+            audios[i].currentTime = 0;
+          }
+          console.log("All audio elements stopped.");
+        }
+        // Uncheck music checkbox and update icon
+        var musicCheckbox = document.getElementById("backgroundMusicEnabled");
+        if (musicCheckbox) musicCheckbox.checked = false;
+        var musicStatus = document.getElementById("musicStatus");
+        if (musicStatus) musicStatus.textContent = "🔇";
+
+        // Clear the game board (SVG)
+        var svg = document.getElementById("gameBoard");
+        if (svg) {
+          while (svg.lastChild) svg.removeChild(svg.lastChild);
+        }
+
+        // Reset any global JS state if needed
+        if (typeof window.resetGameState === "function") {
+          window.resetGameState();
+        }
+
+        // Attempt to reconnect to the socket if available
+        if (typeof window.reconnectSocket === "function") {
+          window.reconnectSocket();
+        } else if (window.socket && typeof window.socket.close === "function") {
+          try {
+            window.socket.close();
+          } catch (e) {}
+          // Optionally, re-initialize socket connection logic here
+          if (typeof window.initSocket === "function") {
+            window.initSocket();
+          }
+        }
+      }
+    </script>
+  </body>
 </html>
