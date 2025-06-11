@@ -1093,13 +1093,19 @@ socket.onclose = (event) => {
     }, 410);
   }
 
-  // Start button click: hide overlay, show modal
+  // Start button click: hide overlay and show modal instantly (no fade, no animation)
   startGameBtn.addEventListener('click', function() {
-    fadeOut(startOverlay, () => fadeIn(modeModal));
+    startOverlay.classList.remove('active');
+    startOverlay.classList.add('hidden');
+    startOverlay.style.transition = 'none';
+    startOverlay.style.opacity = '';
+    modeModal.classList.remove('hidden');
+    modeModal.style.transition = 'none';
+    modeModal.style.opacity = '';
     setTimeout(updateMultiBtn, 100);
   });
 
-  // Mode selection
+  // Mode selection (keep fade for closing modal)
   singleModeBtn.addEventListener('click', function() {
     gameState.gameMode = 'single';
     fadeOut(modeModal, () => setGameBlur(false));

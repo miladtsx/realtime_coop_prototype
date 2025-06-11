@@ -62,13 +62,18 @@
       </div>
       <!-- Game Mode Modal -->
       <div id="modeModal" class="modal hidden">
-        <div class="modal-content">
-          <h2>Select Game Mode</h2>
-          <button id="singleModeBtn" class="btn mode-btn">
-            Single Player (vs AI or offline)
+        <div class="modal-content themed-mode-modal">
+          <h2 class="mode-title">
+            <span class="red-dot"></span>
+            Select Game Mode
+            <span class="blue-dot"></span>
+          </h2>
+          <div class="mode-divider"></div>
+          <button id="singleModeBtn" class="btn mode-btn red-btn">
+            <span class="mode-icon">🎮</span> Single Player (vs AI or offline)
           </button>
-          <button id="multiModeBtn" class="btn mode-btn" disabled>
-            Multiplayer (Online)
+          <button id="multiModeBtn" class="btn mode-btn blue-btn" disabled>
+            <span class="mode-icon">🌐</span> Multiplayer (Online)
           </button>
         </div>
       </div>
