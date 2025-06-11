@@ -208,10 +208,11 @@ function createSquareAreas(boardPadding = 0, spacing = 100) {
         "http://www.w3.org/2000/svg",
         "rect",
       );
-      square.setAttribute("x", boardPadding + col * spacing + 2);
-      square.setAttribute("y", boardPadding + row * spacing + 2);
-      square.setAttribute("width", spacing - 4);
-      square.setAttribute("height", spacing - 4);
+      // Use the exact same formula as dots/lines for alignment
+      square.setAttribute("x", boardPadding + col * spacing);
+      square.setAttribute("y", boardPadding + row * spacing);
+      square.setAttribute("width", spacing);
+      square.setAttribute("height", spacing);
       square.classList.add("square");
       square.setAttribute("data-row", row);
       square.setAttribute("data-col", col);
@@ -320,29 +321,6 @@ function handleTouchCancel(event, line) {
   gameState.touchStarted = false;
   line.classList.remove("touch-preview");
   gameState.hoveredLine = null;
-}
-
-function createSquareAreas() {
-  const boardSize = 400;
-  const spacing = boardSize / (gameState.grid - 1);
-
-  for (let row = 0; row < gameState.grid - 1; row++) {
-    for (let col = 0; col < gameState.grid - 1; col++) {
-      const square = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "rect",
-      );
-      square.setAttribute("x", col * spacing + 2);
-      square.setAttribute("y", row * spacing + 2);
-      square.setAttribute("width", spacing - 4);
-      square.setAttribute("height", spacing - 4);
-      square.classList.add("square");
-      square.setAttribute("data-row", row);
-      square.setAttribute("data-col", col);
-      square.style.display = "none";
-      gameBoard.appendChild(square);
-    }
-  }
 }
 
 function handleLineClick(event, line) {

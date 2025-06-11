@@ -130,6 +130,7 @@ h1 {
     border-radius: 10px;
     background: #1a1a1a;
     touch-action: manipulation;
+    overflow: hidden;
 }
 
 .dot {
@@ -617,7 +618,6 @@ h1 {
     }
 
     .line.available.touch-preview {
-        stroke-width: 8;
         filter: drop-shadow(0 0 15px rgba(39, 174, 96, 0.9));
     }
 }
