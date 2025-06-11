@@ -114,7 +114,8 @@ function updateCursorStyles() {
 function initializeBoard() {
   gameBoard.innerHTML = "";
   const boardSize = 400;
-  const spacing = boardSize / (gameState.grid - 1);
+  const boardPadding = 24; // px margin from edge
+  const spacing = (boardSize - 2 * boardPadding) / (gameState.grid - 1);
 
   // Create dots
   for (let row = 0; row < gameState.grid; row++) {
@@ -123,8 +124,8 @@ function initializeBoard() {
         "http://www.w3.org/2000/svg",
         "circle",
       );
-      dot.setAttribute("cx", col * spacing);
-      dot.setAttribute("cy", row * spacing);
+      dot.setAttribute("cx", boardPadding + col * spacing);
+      dot.setAttribute("cy", boardPadding + row * spacing);
       dot.setAttribute("r", 6);
       dot.classList.add("dot");
       dot.setAttribute("data-row", row);
@@ -134,87 +135,88 @@ function initializeBoard() {
   }
 
   // Create potential lines (horizontal and vertical)
-  createPotentialLines();
-  createSquareAreas();
+  createPotentialLines(boardPadding, spacing);
+  createSquareAreas(boardPadding, spacing);
 }
 
-function createPotentialLines() {
+function createPotentialLines(boardPadding = 0, spacing = 100) {
   const boardSize = 400;
-  const spacing = boardSize / (gameState.grid - 1);
-
   // Horizontal lines
   for (let row = 0; row < gameState.grid; row++) {
     for (let col = 0; col < gameState.grid - 1; col++) {
-      // Create line group for better hit area
       const lineGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      
-      // Create invisible hit area (larger clickable area)
       const hitArea = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      hitArea.setAttribute("x1", col * spacing);
-      hitArea.setAttribute("y1", row * spacing);
-      hitArea.setAttribute("x2", (col + 1) * spacing);
-      hitArea.setAttribute("y2", row * spacing);
+      hitArea.setAttribute("x1", boardPadding + col * spacing);
+      hitArea.setAttribute("y1", boardPadding + row * spacing);
+      hitArea.setAttribute("x2", boardPadding + (col + 1) * spacing);
+      hitArea.setAttribute("y2", boardPadding + row * spacing);
       hitArea.setAttribute("stroke", "transparent");
       hitArea.setAttribute("stroke-width", "20");
       hitArea.setAttribute("stroke-linecap", "round");
       hitArea.classList.add("hit-area");
-      
-      // Create visible line
       const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.setAttribute("x1", col * spacing);
-      line.setAttribute("y1", row * spacing);
-      line.setAttribute("x2", (col + 1) * spacing);
-      line.setAttribute("y2", row * spacing);
+      line.setAttribute("x1", boardPadding + col * spacing);
+      line.setAttribute("y1", boardPadding + row * spacing);
+      line.setAttribute("x2", boardPadding + (col + 1) * spacing);
+      line.setAttribute("y2", boardPadding + row * spacing);
       line.classList.add("line", "available");
       line.setAttribute("data-type", "horizontal");
       line.setAttribute("data-row", row);
       line.setAttribute("data-col", col);
       line.style.pointerEvents = "none";
-      
-      // Add event listeners to the group
       setupLineEvents(lineGroup, line);
-      
       lineGroup.appendChild(hitArea);
       lineGroup.appendChild(line);
       gameBoard.appendChild(lineGroup);
     }
   }
-
   // Vertical lines
   for (let row = 0; row < gameState.grid - 1; row++) {
     for (let col = 0; col < gameState.grid; col++) {
-      // Create line group for better hit area
       const lineGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      
-      // Create invisible hit area (larger clickable area)
       const hitArea = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      hitArea.setAttribute("x1", col * spacing);
-      hitArea.setAttribute("y1", row * spacing);
-      hitArea.setAttribute("x2", col * spacing);
-      hitArea.setAttribute("y2", (row + 1) * spacing);
+      hitArea.setAttribute("x1", boardPadding + col * spacing);
+      hitArea.setAttribute("y1", boardPadding + row * spacing);
+      hitArea.setAttribute("x2", boardPadding + col * spacing);
+      hitArea.setAttribute("y2", boardPadding + (row + 1) * spacing);
       hitArea.setAttribute("stroke", "transparent");
       hitArea.setAttribute("stroke-width", "20");
       hitArea.setAttribute("stroke-linecap", "round");
       hitArea.classList.add("hit-area");
-      
-      // Create visible line
       const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.setAttribute("x1", col * spacing);
-      line.setAttribute("y1", row * spacing);
-      line.setAttribute("x2", col * spacing);
-      line.setAttribute("y2", (row + 1) * spacing);
+      line.setAttribute("x1", boardPadding + col * spacing);
+      line.setAttribute("y1", boardPadding + row * spacing);
+      line.setAttribute("x2", boardPadding + col * spacing);
+      line.setAttribute("y2", boardPadding + (row + 1) * spacing);
       line.classList.add("line", "available");
       line.setAttribute("data-type", "vertical");
       line.setAttribute("data-row", row);
       line.setAttribute("data-col", col);
       line.style.pointerEvents = "none";
-      
-      // Add event listeners to the group
       setupLineEvents(lineGroup, line);
-      
       lineGroup.appendChild(hitArea);
       lineGroup.appendChild(line);
       gameBoard.appendChild(lineGroup);
+    }
+  }
+}
+
+function createSquareAreas(boardPadding = 0, spacing = 100) {
+  for (let row = 0; row < gameState.grid - 1; row++) {
+    for (let col = 0; col < gameState.grid - 1; col++) {
+      const square = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect",
+      );
+      square.setAttribute("x", boardPadding + col * spacing + 2);
+      square.setAttribute("y", boardPadding + row * spacing + 2);
+      square.setAttribute("width", spacing - 4);
+      square.setAttribute("height", spacing - 4);
+      square.classList.add("square");
+      square.setAttribute("data-row", row);
+      square.setAttribute("data-col", col);
+      square.style.display = "none";
+      gameBoard.appendChild(square);
     }
   }
 }
