@@ -679,6 +679,24 @@ function completeSquare(row, col, player) {
     square.style.display = "block";
     square.classList.add(`player${player}`);
   }
+
+  // Color the border lines of the completed square
+  const borderLines = [
+    { type: 'horizontal', r: row, c: col },
+    { type: 'horizontal', r: row + 1, c: col },
+    { type: 'vertical', r: row, c: col },
+    { type: 'vertical', r: row, c: col + 1 },
+  ];
+  borderLines.forEach(({ type, r, c }) => {
+    const line = document.querySelector(
+      `[data-type="${type}"][data-row="${r}"][data-col="${c}"]`
+    );
+    if (line) {
+      line.classList.remove('available', 'hovered', 'touch-preview', 'player1', 'player2');
+      line.classList.add(`player${player}`);
+      line.style.opacity = '1';
+    }
+  });
 }
 
 
