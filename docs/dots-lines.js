@@ -926,7 +926,7 @@ socket.onmessage = (event) => {
         gameState.lines.clear();
         gameState.squares.clear();
         gameState.scores = { 1: 0, 2: 0 };
-        updateGameStatus("Game started!");
+        updateGameStatus(gameState.playerId === 1 ? "Game started - Your turn!" : "Game started - Opponent's turn!");
         initializeBoard();
         updateUI();
         break;
@@ -948,6 +948,8 @@ socket.onmessage = (event) => {
         }
         if (data.currentPlayer !== undefined) {
           gameState.currentPlayer = data.currentPlayer;
+          // Update game status to show whose turn it is
+          updateGameStatus(gameState.currentPlayer === gameState.playerId ? "Your turn!" : "Opponent's turn!");
         }
 
         // Play completion sound if squares were completed
